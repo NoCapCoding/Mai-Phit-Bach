@@ -1,0 +1,108 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mai Phít Bách</title>
+    <style>
+       body {
+    margin: 0;
+    overflow: hidden;
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.marquee {
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.marquee p {
+    display: inline-block;
+    font-size: 50vh; /* Kích thước chữ bằng 1/2 chiều cao màn hình */
+    color: white;
+    animation: marquee 10s linear infinite;
+}
+
+@keyframes marquee {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+</style>
+</head>
+<body>
+    <div class="marquee">
+        <p>Very Goooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooood</p>
+    </div>
+    <canvas id="fireworksCanvas"></canvas>
+    <script>
+    const canvas = document.getElementById('fireworksCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+function random(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+function Firework(x, y) {
+    this.x = x;
+    this.y = y;
+    this.radius = random(2, 4);
+    this.color = `hsl(${random(0, 360)}, 100%, 50%)`;
+    this.speed = random(1, 3);
+    this.angle = random(0, Math.PI * 2);
+    this.vx = Math.cos(this.angle) * this.speed;
+    this.vy = Math.sin(this.angle) * this.speed;
+}
+
+Firework.prototype.update = function() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.radius *= 0.98;
+};
+
+Firework.prototype.draw = function() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+};
+
+let fireworks = [];
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    fireworks.forEach((firework, index) => {
+        firework.update();
+        firework.draw();
+        if (firework.radius < 0.5) {
+            fireworks.splice(index, 1);
+        }
+    });
+    requestAnimationFrame(animate);
+}
+
+function createFireworks() {
+    for (let i = 0; i < 100; i++) {
+        fireworks.push(new Firework(random(0, canvas.width), random(0, canvas.height)));
+    }
+}
+
+setInterval(createFireworks, 1000); // Tạo pháo hoa mỗi giây
+
+animate();
+   </script>
+</body>
+</html>
